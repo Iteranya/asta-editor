@@ -3,97 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Milkdown Builder Test</title>
-
-    <!-- 1. Load the CSS we just built -->
+    <title>Milkdown Real Upload Test</title>
     <link rel="stylesheet" href="./dist/asta-editor.css">
-
-    <!-- Optional: Tailwind just for layout structure -->
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- 2. Alpine JS -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     <style>
-        /* Give the editor a fixed height for testing */
         .editor-wrapper {
             height: 500px;
-            overflow: auto;
+            overflow-y: auto;
+            background: white;
+            cursor: text;
         }
+        .editor-wrapper .milkdown { height: 100%; display: flex; flex-direction: column; }
+        .editor-wrapper .milkdown .ProseMirror { flex-grow: 1; outline: none; padding-bottom: 50px; min-height: 100%; }
+        [x-cloak] { display: none !important; }
     </style>
 </head>
 <body class="bg-gray-100 p-10">
 
-    <!-- 3. Load the JS we just built -->
-    <!-- This creates the global variable 'window.MilkdownDist' -->
     <script src="./dist/asta-bundle.umd.js"></script>
 
-    <div class="max-w-4xl mx-auto" x-data="app">
-        
-        <div class="flex justify-between items-end mb-4">
-            <h1 class="text-2xl font-bold">Local Build Test</h1>
-            <span class="text-xs text-gray-500" x-show="ready">Status: Ready</span>
+    <div class="max-w-6xl mx-auto" x-data="editorApp" x-cloak>
+        <div class="flex justify-between items-center mb-4 bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+            <h1 class="font-bold text-gray-800">Real Upload Test</h1>
+            <span class="text-xs font-mono px-2 py-1 bg-gray-100 rounded text-gray-600" x-text="status"></span>
         </div>
 
-        <!-- Editor Container -->
-        <div class="bg-white rounded-lg shadow-lg border border-gray-200 editor-wrapper">
+        <div class="bg-white rounded-lg shadow-md border border-gray-300 editor-wrapper p-6"
+             @click="focusEditor($event)">
             <div x-ref="editorRoot" class="h-full"></div>
         </div>
 
-        <!-- Live Output Preview -->
-        <div class="mt-8 p-4 bg-slate-800 text-green-400 rounded-md font-mono text-sm">
-            <p class="text-gray-500 mb-2 border-b border-gray-700 pb-1">MARKDOWN OUTPUT:</p>
-            <div x-text="content"></div>
+        <div class="mt-6 bg-slate-900 rounded-lg p-4 shadow-inner">
+            <p class="text-xs font-bold text-slate-400 border-b border-slate-700 pb-2 mb-2">OUTPUT MARKDOWN</p>
+            <pre class="text-green-400 font-mono text-xs overflow-auto h-32 whitespace-pre-wrap" x-text="content"></pre>
         </div>
-
     </div>
 
     <script>
-        // ... Your Big Array ...
-        const SNAPIPPET_DATA = [{"slug":"page-card-blog","name":"Page Card: Blog Home","description":"Visual link card for Blog Home","category":"Pages","data":"\n<div class=\"embed-card\" style=\"border:1px solid #ddd; border-radius:8px; overflow:hidden; max-width:400px; margin:1rem 0;\">\n    <a href=\"/pages/blog\" style=\"text-decoration:none; color:inherit;\">\n        <div class=\"embed-thumb\" style=\"height:200px; overflow:hidden;\">\n            <img src=\"https://placehold.co/600x400?text=No+Image\" alt=\"Blog Home\" style=\"width:100%; height:100%; object-fit:cover;\">\n        </div>\n        <div class=\"embed-content\" style=\"padding:1rem;\">\n            <h3 style=\"margin-top:0;\">Blog Home</h3>\n            <p style=\"color:#666; font-size:0.9rem;\"></p>\n        </div>\n    </a>\n</div>\n"},{"slug":"page-frame-blog","name":"Page Frame: Blog Home","description":"Embed full page via Iframe","category":"Pages","data":"<iframe src=\"/pages/blog\" title=\"Blog Home\" width=\"100%\" height=\"600px\" frameborder=\"0\" loading=\"lazy\"></iframe>"},{"slug":"page-link-blog","name":"Page Link: Blog Home","description":"Simple text hyperlink","category":"Pages","data":"<a href=\"/pages/blog\" title=\"Blog Home\">Blog Home</a>"},{"slug":"page-card-blog-template","name":"Page Card: Blog Template","description":"Visual link card for Blog Template","category":"Pages","data":"\n<div class=\"embed-card\" style=\"border:1px solid #ddd; border-radius:8px; overflow:hidden; max-width:400px; margin:1rem 0;\">\n    <a href=\"/pages/blog-template\" style=\"text-decoration:none; color:inherit;\">\n        <div class=\"embed-thumb\" style=\"height:200px; overflow:hidden;\">\n            <img src=\"https://placehold.co/600x400?text=No+Image\" alt=\"Blog Template\" style=\"width:100%; height:100%; object-fit:cover;\">\n        </div>\n        <div class=\"embed-content\" style=\"padding:1rem;\">\n            <h3 style=\"margin-top:0;\">Blog Template</h3>\n            <p style=\"color:#666; font-size:0.9rem;\"></p>\n        </div>\n    </a>\n</div>\n"},{"slug":"page-frame-blog-template","name":"Page Frame: Blog Template","description":"Embed full page via Iframe","category":"Pages","data":"<iframe src=\"/pages/blog-template\" title=\"Blog Template\" width=\"100%\" height=\"600px\" frameborder=\"0\" loading=\"lazy\"></iframe>"},{"slug":"page-link-blog-template","name":"Page Link: Blog Template","description":"Simple text hyperlink","category":"Pages","data":"<a href=\"/pages/blog-template\" title=\"Blog Template\">Blog Template</a>"},{"slug":"page-card-hello-world","name":"Page Card: Hello World","description":"Visual link card for Hello World","category":"Pages","data":"\n<div class=\"embed-card\" style=\"border:1px solid #ddd; border-radius:8px; overflow:hidden; max-width:400px; margin:1rem 0;\">\n    <a href=\"/pages/hello-world\" style=\"text-decoration:none; color:inherit;\">\n        <div class=\"embed-thumb\" style=\"height:200px; overflow:hidden;\">\n            <img src=\"/media/anita.jpg\" alt=\"Hello World\" style=\"width:100%; height:100%; object-fit:cover;\">\n        </div>\n        <div class=\"embed-content\" style=\"padding:1rem;\">\n            <h3 style=\"margin-top:0;\">Hello World</h3>\n            <p style=\"color:#666; font-size:0.9rem;\"></p>\n        </div>\n    </a>\n</div>\n"},{"slug":"page-frame-hello-world","name":"Page Frame: Hello World","description":"Embed full page via Iframe","category":"Pages","data":"<iframe src=\"/pages/hello-world\" title=\"Hello World\" width=\"100%\" height=\"600px\" frameborder=\"0\" loading=\"lazy\"></iframe>"},{"slug":"page-link-hello-world","name":"Page Link: Hello World","description":"Simple text hyperlink","category":"Pages","data":"<a href=\"/pages/hello-world\" title=\"Hello World\">Hello World</a>"},{"slug":"page-card-anita-home","name":"Page Card: Anita Home","description":"Visual link card for Anita Home","category":"Pages","data":"\n<div class=\"embed-card\" style=\"border:1px solid #ddd; border-radius:8px; overflow:hidden; max-width:400px; margin:1rem 0;\">\n    <a href=\"/pages/anita-home\" style=\"text-decoration:none; color:inherit;\">\n        <div class=\"embed-thumb\" style=\"height:200px; overflow:hidden;\">\n            <img src=\"https://placehold.co/600x400?text=No+Image\" alt=\"Anita Home\" style=\"width:100%; height:100%; object-fit:cover;\">\n        </div>\n        <div class=\"embed-content\" style=\"padding:1rem;\">\n            <h3 style=\"margin-top:0;\">Anita Home</h3>\n            <p style=\"color:#666; font-size:0.9rem;\"></p>\n        </div>\n    </a>\n</div>\n"},{"slug":"page-frame-anita-home","name":"Page Frame: Anita Home","description":"Embed full page via Iframe","category":"Pages","data":"<iframe src=\"/pages/anita-home\" title=\"Anita Home\" width=\"100%\" height=\"600px\" frameborder=\"0\" loading=\"lazy\"></iframe>"},{"slug":"page-link-anita-home","name":"Page Link: Anita Home","description":"Simple text hyperlink","category":"Pages","data":"<a href=\"/pages/anita-home\" title=\"Anita Home\">Anita Home</a>"},{"slug":"media-html-anita-1766634519949","name":"Image (HTML): anita","description":"Standard HTML <img> tag for anita","category":"Media","data":"\n<figure class=\"media-embed\">\n    <img src=\"/media/anitacms_1766634517.webp\" alt=\"anita\" style=\"max-width:100%; height:auto;\">\n    \n</figure>\n"},{"slug":"media-md-anita-1766634519949","name":"Image (Markdown): anita","description":"Markdown syntax ![alt](url) for anita","category":"Media","data":"![anita](/media/anitacms_1766634517.webp)"},{"slug":"media-url-anita-1766634519949","name":"Raw URL: anita","description":"The direct public link to the file","category":"Media","data":"/media/anitacms_1766634517.webp"},{"slug":"media-html-anita-pfp_1766382159-1766580142624","name":"Image (HTML): anita-pfp_1766382159","description":"Standard HTML <img> tag for anita-pfp_1766382159","category":"Media","data":"\n<figure class=\"media-embed\">\n    <img src=\"/media/anita-pfp_1766382159.webp\" alt=\"anita-pfp_1766382159\" style=\"max-width:100%; height:auto;\">\n    \n</figure>\n"},{"slug":"media-md-anita-pfp_1766382159-1766580142624","name":"Image (Markdown): anita-pfp_1766382159","description":"Markdown syntax ![alt](url) for anita-pfp_1766382159","category":"Media","data":"![anita-pfp_1766382159](/media/anita-pfp_1766382159.webp)"},{"slug":"media-url-anita-pfp_1766382159-1766580142624","name":"Raw URL: anita-pfp_1766382159","description":"The direct public link to the file","category":"Media","data":"/media/anita-pfp_1766382159.webp"}]; 
-
         document.addEventListener('alpine:init', () => {
-            Alpine.data('app', () => ({
-                content: 'Waiting...',
-                
-                init() {
+            Alpine.data('editorApp', () => ({
+                editorInstance: null,
+                content: '',
+                status: 'Waiting...',
+
+                async init() {
                     if (!window.AstaMilkdown) return;
 
-                    // --- 1. THE FILTER LOGIC ---
-                    // We only want to show "Page Cards" and "Markdown Images"
-                    // We hide the Frames, Raw URLs, and HTML Images to keep menu clean.
-                    const cleanCommands = SNAPIPPET_DATA
-                        .filter(item => {
-                            // Return true if slug contains 'page-card' OR 'media-md'
-                            return item.slug.includes('page-card') || item.slug.includes('media-md');
-                        })
-                        .map(item => ({
-                            name: item.name.replace('Page Card: ', '').replace('Image (Markdown): ', ''), // Cleanup name
-                            category: item.category,
-                            data: item.data
-                        }));
+                    this.editorInstance = await window.AstaMilkdown.createEditor(this.$refs.editorRoot, {
+                        defaultValue: '# Image Upload Test\nDrag an image here to see the console logs.',
+                        
+                        onUpdate: (md) => { this.content = md; },
+                        
+                        // -----------------------------------------------------------
+                        // REAL UPLOAD LOGIC
+                        // -----------------------------------------------------------
+                        uploadHandler: async (file) => {
+                            const TARGET_URL = '/media/upload';
+                            this.status = `Uploading to ${TARGET_URL}...`;
 
-                    // --- 2. OPTIONAL: ADD A "BROWSER" COMMAND ---
-                    // If you want a button that opens a popup instead of inserting immediately
-                    cleanCommands.push({
-                        name: "Open Asset Browser...",
-                        category: "System",
-                        handler: () => {
-                            // Triggers Alpine to open a modal
-                            // You can dispatch an event here
-                            alert("Imagine a Modal opening here to browse all your files!");
+                            // 1. Log exactly where we are sending it
+                            console.log(`[Upload] 🚀 STARTING REQUEST`);
+                            console.log(`[Upload] 🎯 Target URL:`, window.location.origin + TARGET_URL);
+                            console.log(`[Upload] 📂 File:`, file.name);
+
+                            const formData = new FormData();
+                            formData.append('file', file);
+
+                            try {
+                                // 2. Perform the REAL fetch
+                                const response = await fetch(TARGET_URL, {
+                                    method: 'POST',
+                                    body: formData
+                                });
+
+                                // 3. Log the RAW result from the server
+                                console.log(`[Upload] 📥 Server Response Status:`, response.status, response.statusText);
+
+                                if (response.status === 404) {
+                                    console.error(`[Upload] ❌ FAIL: Endpoint not found (404). Check your backend routes.`);
+                                    alert(`Upload Failed: Endpoint ${TARGET_URL} not found (404)`);
+                                    throw new Error("404 Endpoint Not Found");
+                                }
+
+                                if (!response.ok) {
+                                    console.error(`[Upload] ❌ FAIL: Server error.`);
+                                    throw new Error(`Server Error: ${response.status}`);
+                                }
+
+                                const data = await response.json();
+                                console.log(`[Upload] ✅ SUCCESS:`, data);
+                                this.status = 'Upload Complete';
+                                
+                                // Return the URL so the editor displays the image
+                                return data.url; 
+
+                            } catch (error) {
+                                console.error(`[Upload] 💥 CRITICAL ERROR:`, error);
+                                this.status = 'Upload Error';
+                                throw error;
+                            }
                         }
                     });
+                    
+                    this.status = 'Ready';
+                },
 
-                    window.AstaMilkdown.createEditor(this.$refs.editorRoot, {
-                        defaultValue: '',
-                        // Pass the clean list, not the messy one
-                        slashCommands: cleanCommands, 
-                        onUpdate: (markdown) => { this.content = markdown; }
-                    });
+                focusEditor(e) {
+                    const pm = this.$refs.editorRoot.querySelector('.ProseMirror');
+                    if (pm && (e.target === e.currentTarget || e.target === this.$refs.editorRoot)) {
+                        pm.focus();
+                    }
                 }
             }))
         })
     </script>
 </body>
 </html>
+
