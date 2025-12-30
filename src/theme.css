@@ -1,0 +1,11 @@
+/* src/theme.css */
+
+/* Import the defaults so they get bundled */
+@import "@milkdown/crepe/theme/common/style.css";
+@import "@milkdown/crepe/theme/frame.css";
+
+/* Your custom overrides */
+.milkdown-wrap {
+    height: 100%;
+    min-height: 400px;
+}
